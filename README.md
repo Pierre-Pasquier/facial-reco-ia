@@ -1,22 +1,22 @@
 # facial-reco-ia
 
-Dépôt principal du projet avec tous les codes utilisés relatifs à l’IA et reconnaissance faciale respectant une structure classique de dossiers (source, tests, modèles...)
+Main repository of the project with all the codes used relating to AI and facial recognition respecting a classical folder structure (source, tests, models...)
 
-## Lancer le container docker
+## Launch docker container
 
-- Se placer à la racine du projet et **build** l'image avec le `dockerfile`.
+- Be at the root of the repository project and **build** image with `dockerfile`.
 
 ```bash
 docker build -t reco .
 ```
 
-- Lancer le conteneur.
+- Run the container.
 
 ```bash
-docker run -id reco
+docker run -id -v $(pwd):/facial-reco-ia reco
 ```
 
-- Ouvrir le conteneur.
+- Execute and open the container.
 
 ```bash
 docker exec -ti <id_conteneur> bash
