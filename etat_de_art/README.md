@@ -4,17 +4,25 @@
 
 ### Images
 
-#### Training
+#### Face detection
+
+[Face Detection in Images](https://www.kaggle.com/datasets/dataturks/face-detection-in-images): 500 images, 1.1k faces
+
+#### Face recognition
+
+##### Training
 
 [VGG2](https://drive.google.com/file/d/1dyVQ7X3d28eAcjV3s3o0MT-HyODp_v3R/view?usp=sharing): 3.31m images, 9k people
 
 [WebFace260million](https://www.face-benchmark.org/download.html): 260m images, 4m people
 
-#### Benchmark
+##### Benchmark
 
 [LFW: Labeled Faces in the Wild](http://vis-www.cs.umass.edu/lfw/): 13k images, 5k people
 
 ### Videos
+
+#### Face recognition
 
 [YTF: YouTube Faces](https://www.cs.tau.ac.il/~wolf/ytfaces/): 3.4k videos, 1.5k people
 
