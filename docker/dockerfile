@@ -8,6 +8,8 @@ RUN apt-get update \
 && apt-get install -y python3-pip \
 && pip install --upgrade pip
 
+RUN apt-get update && apt-get install ffmpeg libsm6 libxext6 -y
+
 RUN pip install -r requirements.txt
 
 VOLUME /facial-reco-ia
