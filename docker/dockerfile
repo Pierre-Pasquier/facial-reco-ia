@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 
-ADD . /facial-reco-ia/
+ADD .. /facial-reco-ia/
 WORKDIR /facial-reco-ia
 
 RUN apt-get update \
