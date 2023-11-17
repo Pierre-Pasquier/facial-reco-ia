@@ -4,6 +4,7 @@ import numpy as np
 import sys, time, math
 from  collections import deque
 import time
+import os
 
 
 
@@ -20,7 +21,7 @@ models = [
   "SFace",
 ]
 
-directory = 'C:/Users/pierr/Desktop/Telecom_Nancy/3A/PI/Vidéos test/'
+directory = os.getcwd() + '/Videos_test/'
 
 videos = ['Crowd walking on street.mp4',
           'Crowd of People Walking in London.mp4',
@@ -97,10 +98,10 @@ for vid in videos :
         print("Video " + vid + " labelled with model " + model + " !")
         time_video_model_end = time.time()
         f = open(directory + "time_result.txt", "a")
-        f.write("Video " + vid + " labelled with model " + model + " in " + str(time_video_model_end - time_video_model_start) + " seconds for " + length + " frames -> rate of " + str((time_video_model_end - time_video_model_start)/length) + " seconds per frame \n")
+        f.write("Video " + vid + " labelled with model " + model + " in " + str(time_video_model_end - time_video_model_start) + " seconds for " + str(length) + " frames -> rate of " + str((time_video_model_end - time_video_model_start)/length) + " seconds per frame \n")
         f.close()
 
     time_video_end = time.time()
     f = open(directory + "time_result.txt", "a")
-    f.write("Video " + vid + " labelled with every model in " + str(time_video_model_end - time_video_model_start) + " seconds for " + length + " frames\n")
+    f.write("Video " + vid + " labelled with every model in " + str(time_video_model_end - time_video_model_start) + " seconds for " + str(length) + " frames\n\n")
     f.close()
