@@ -21,7 +21,7 @@ models = [
   "SFace",
 ]
 
-directory = os.getcwd() + '/Videos_test/'
+directory = os.getcwd() + '/videos_test/'
 
 videos = ['Crowd walking on street.mp4',
           'Crowd of People Walking in London.mp4',
@@ -46,7 +46,7 @@ for vid in videos :
         frame_width = int(video.get(3)) 
         frame_height = int(video.get(4))
         size = (frame_width, frame_height)
-        result = cv2.VideoWriter(directory + 'Labelled videos/' + vid[:-4] + '_labelled_' + model + '.mp4',  
+        result = cv2.VideoWriter(directory + 'labelled_videos/' + vid[:-4] + '_labelled_' + model + '.mp4',  
                                 cv2.VideoWriter_fourcc(*'mp4v'), 
                                 30, size) 
 
