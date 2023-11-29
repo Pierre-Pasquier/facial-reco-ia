@@ -6,7 +6,7 @@
 
 #### Face detection
 
-[Face Detection in Images](https://www.kaggle.com/datasets/dataturks/face-detection-in-images): 500 images, 1.1k faces
+[WIDER FACE](http://shuoyang1213.me/WIDERFACE/): 32k images, 393k faces
 
 #### Face recognition
 
