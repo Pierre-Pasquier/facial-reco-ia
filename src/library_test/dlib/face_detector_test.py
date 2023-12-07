@@ -30,7 +30,7 @@ def main(folder_path, use_cpu):
             print("Detection {}: Left: {} Top: {} Right: {} Bottom: {}".format(
                 k, d.left(), d.top(), d.right(), d.bottom()))
 
-    print("Average time taken:", mean(processing_times))
+    print("Average time taken:", mean(processing_times[1:]))
 
 if __name__ == "__main__":
     main()

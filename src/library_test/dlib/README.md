@@ -14,7 +14,7 @@ The script `detection_and_recognition.py` was download at the following [link](h
 
 You can launch it with the following command:
 ```bash
-python3 face_recognition.py <shape_predictor_model_path> <face_recognition_model_path> <image_folder_path>
+python3 detection_and_recognition.py <shape_predictor_model_path> <face_recognition_model_path> <image_folder_path>
 ```
 
 This script is interesting to evaluate visually the precision of the face detection model.
@@ -25,8 +25,11 @@ The script `face_detector_test.py` evaluate the time taken by the face detector 
 
 You can launch it with the following command:
 ```bash
-python3 face_recognition.py --folder_path <image_folder_path>
+python3 face_detector_test.py --folder_path <image_folder_path>
 ```
+
+Here are the results of the script running with the jetson nano orin (CPU) on the small dataset:
+- Average time taken per image: 0.7068637609481812
 
 ### Face recognition test
 
@@ -43,3 +46,7 @@ python3 face_reco_test.py \
 This script take optionnal commands:
 - `--use_cpu` if you want to use CPU instead of GPU (default);
 - `--align` if you want to align the face for better face recognition performances.
+
+Here are the results of the script running with the jetson nano orin (GPU) on the small dataset:
+- Average time taken per face: 0.01273804444533128 seconds
+- Average time taken per image: 0.03696376085281372 seconds

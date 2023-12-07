@@ -57,8 +57,8 @@ def main(shape_predictor, face_reco, folder_path, use_cpu, align):
         
         processing_times_per_image.append(processing_time_img)
 
-    print("Average time taken per face:", mean(processing_times_per_face))
-    print("Average time taken per image:", mean(processing_times_per_image))
+    print("Average time taken per face:", mean(processing_times_per_face[1:]))
+    print("Average time taken per image:", mean(processing_times_per_image[1:]))
 
 if __name__ == "__main__":
     main()
