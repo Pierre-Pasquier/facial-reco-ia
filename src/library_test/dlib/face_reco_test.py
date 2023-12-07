@@ -6,26 +6,22 @@ import glob
 from statistics import mean
 
 @click.command()
+@click.option('--face_detector', type=str, help='Path to the face detector model', required=True)
 @click.option('--shape_predictor', type=str, help='Path to the shape predictor model', required=True)
 @click.option('--face_reco', type=str, help='Path to the face recognition model', required=True)
 @click.option('--folder_path', type=str, help='Path to the image folder', required=True)
-@click.option('--use_cpu', is_flag=True, help='Use CPU instead of GPU')
 @click.option('--align', is_flag=True, help='Align the face for better face recognition performances')
-def main(shape_predictor, face_reco, folder_path, use_cpu, align):
-    if use_cpu:
-        # deactivate GPU
-        os.environ["CUDA_VISIBLE_DEVICES"] = ""
-
+def main(face_detector, shape_predictor, face_reco, folder_path, align):
     processing_times_per_face = []
     processing_times_per_image = []
-    face_detector = dlib.get_frontal_face_detector()
+    cnn_face_detector = dlib.cnn_face_detection_model_v1(face_detector)
     sp = dlib.shape_predictor(shape_predictor)
     facerec = dlib.face_recognition_model_v1(face_reco)
     
     for f in glob.glob(os.path.join(folder_path, "*.jpg")):
         img = dlib.load_rgb_image(f)
 
-        dets = face_detector(img, 1)
+        dets = cnn_face_detector(img, 1)
 
         print(f"\nFile {f}:")
         print("Number of faces detected: {}".format(len(dets)))
@@ -33,13 +29,13 @@ def main(shape_predictor, face_reco, folder_path, use_cpu, align):
         processing_time_img = 0
 
         # Now process each face we found.
-        for k, d in enumerate(dets):
-            print("Detection {}: Left: {} Top: {} Right: {} Bottom: {}".format(
-                k, d.left(), d.top(), d.right(), d.bottom()))
+        for i, d in enumerate(dets):
+            print("Detection {}: Left: {} Top: {} Right: {} Bottom: {} Confidence: {}".format(
+                i, d.rect.left(), d.rect.top(), d.rect.right(), d.rect.bottom(), d.confidence))
             
             start = time.time()
 
-            shape = sp(img, d)
+            shape = sp(img, d.rect)
 
             if align:
                 face_chip = dlib.get_face_chip(img, shape)

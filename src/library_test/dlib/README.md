@@ -10,7 +10,7 @@ chmod 777 bash/dlib_models.sh
 
 ## Face detection and recognition script
 
-The script `detection_and_recognition.py` was download at the following [link](http://dlib.net/face_recognition.py.html).
+The script `official_examples/detection_and_recognition.py` was download at the following [link](http://dlib.net/face_recognition.py.html).
 
 You can launch it with the following command:
 ```bash
@@ -25,11 +25,13 @@ The script `face_detector_test.py` evaluate the time taken by the face detector 
 
 You can launch it with the following command:
 ```bash
-python3 face_detector_test.py --folder_path <image_folder_path>
+python3 src/library_test/dlib/face_detector_test.py \
+    --face_detector <face_detector_model_path> \
+    --folder_path <image_folder_path>
 ```
 
-Here are the results of the script running with the jetson nano orin (CPU) on the small dataset:
-- Average time taken per image: 0.7068637609481812
+This script take optionnal commands:
+- `--use_cpu` if you want to use CPU instead of GPU (default).
 
 ### Face recognition test
 
@@ -38,13 +40,13 @@ The script `face_reco_test.py` evaluate the time taken by the face recognition m
 You can launch it with the following command:
 ```bash
 python3 face_reco_test.py \
+    --face_detector <face_detector_model_path> \
     --shape_predictor <shape_predictor_model_path> \
     --face_reco <face_recognition_model_path> \
     --folder_path <image_folder_path>
 ```
 
 This script take optionnal commands:
-- `--use_cpu` if you want to use CPU instead of GPU (default);
 - `--align` if you want to align the face for better face recognition performances.
 
 Here are the results of the script running with the jetson nano orin (GPU) on the small dataset:
