@@ -58,8 +58,6 @@ def mean_iou(boxlist1, boxlist2):
     return mean(iou_list)
 
 def calculate_precision_recall_iou_threshold(ground_truth_boxes, detected_boxes, iou_threshold):
-    print("calculate_precision_recall_iou_threshold")
-    print(ground_truth_boxes, detected_boxes)
     true_positives = 0
     false_positives = 0
     false_negatives = 0
@@ -83,7 +81,7 @@ def calculate_precision_recall_iou_threshold(ground_truth_boxes, detected_boxes,
     precision = true_positives / (true_positives + false_positives) if (true_positives + false_positives) > 0 else 0
     recall = true_positives / (true_positives + false_negatives) if (true_positives + false_negatives) > 0 else 0
 
-    return precision, recall
+    return precision, recall, true_positives, false_positives, false_negatives
 
 def convert_coordinates(box_trbl):
     """Convert coordinates from "top, right, bottom, left" to "x, y, w, h"."""
@@ -102,7 +100,7 @@ def evaluation(label_dict, detected_boxes, iou_threshold):
 
     if len(detected_boxes) == 0:
         print("Evaluation impossible since no visage where detected")
-        return
+        return 0, 0, label_dict[0]
     
     for i, box in enumerate(detected_boxes):
         # tuple to list
@@ -111,6 +109,8 @@ def evaluation(label_dict, detected_boxes, iou_threshold):
         detected_boxes[i] = convert_coordinates(box)
 
     mean_iou_calculated = mean_iou(ground_truth_boxes.copy(), detected_boxes.copy())
-    precision, recall = calculate_precision_recall_iou_threshold(ground_truth_boxes, detected_boxes, iou_threshold)
+    precision, recall, true_positives, false_positives, false_negatives = calculate_precision_recall_iou_threshold(ground_truth_boxes, detected_boxes, iou_threshold)
 
     print(f"Average IoU: {mean_iou_calculated}\nPrecision: {precision}\nRecall: {recall}")
+
+    return true_positives, false_positives, false_negatives

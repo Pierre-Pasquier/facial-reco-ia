@@ -16,15 +16,20 @@ from src.evaluation.evaluation import evaluation
 @click.option('--folder_path', type=str, help='Path to the image folder', required=True)
 @click.option('--label_path', type=str, help='Path to the label json file', required=False)
 @click.option('--iou_threshold', type=float, help='IoU threshold for evaluation', required=False, default=0.5)
-def main(folder_path, label_path, iou_threshold):
+@click.option('--use_cpu', is_flag=True, help='Use CPU instead of GPU')
+def main(folder_path, label_path, iou_threshold, use_cpu):
     processing_times = []
+    true_positives_count, false_positives_count, false_negatives_count = [0, 0, 0]
     
     for f in glob.glob(os.path.join(folder_path, "*.jpg")):
         image = face_recognition.load_image_file(f)
 
         start = time.time()
 
-        face_locations = face_recognition.face_locations(image, number_of_times_to_upsample=0) #, model="cnn")
+        if use_cpu:
+            face_locations = face_recognition.face_locations(image, number_of_times_to_upsample=0)
+        else:
+            face_locations = face_recognition.face_locations(image, number_of_times_to_upsample=0, model="cnn")
 
         processing_times.append(time.time() - start)
 
@@ -44,9 +49,19 @@ def main(folder_path, label_path, iou_threshold):
             with open(label_path, 'r') as file:
                 label_dict = json.load(file)
 
-            evaluation(label_dict[file_name], face_locations, iou_threshold)
+            true_positives, false_positives, false_negatives = evaluation(label_dict[file_name], face_locations, iou_threshold)
+            true_positives_count += true_positives
+            false_positives_count += false_positives
+            false_negatives_count += false_negatives
 
-    print("Average time taken:", mean(processing_times[1:]))
+    print("\nAverage time taken:", mean(processing_times[1:]))
+
+    if label_path is not None:
+        precision = true_positives_count / (true_positives_count + false_positives_count) if (true_positives_count + false_positives_count) > 0 else 0
+        recall = true_positives_count / (true_positives_count + false_negatives_count) if (true_positives_count + false_negatives_count) > 0 else 0
+
+        print(f"Global precision: {precision}")
+        print(f"Global recall: {recall}")
 
 if __name__ == "__main__":
     main()

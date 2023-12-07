@@ -25,12 +25,14 @@ The script `face_detector_test.py` evaluate the time taken by the face detector 
 
 You can launch it with the following command:
 ```bash
-python3 src/library_test/dlib/face_detector_test.py \
+python3 face_detector_test.py \
     --face_detector <face_detector_model_path> \
     --folder_path <image_folder_path>
 ```
 
 This script take optionnal commands:
+- `--label_path <label_file_path>` if you want to do an evaluation of the detector;
+- `--iou_threshold <float_min_iou>` to specify the threshold you want to use to consider one detection correct;
 - `--use_cpu` if you want to use CPU instead of GPU (default).
 
 ### Face recognition test
