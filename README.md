@@ -32,3 +32,15 @@ pip install mtcnn
 pip install opencv-python
 pip install retina-face
 ```
+
+### DLib
+
+You can directly use the following command to install dlib:
+```bash
+pip install dlib
+```
+
+To download the models using the bash script `bash/dlib_models.sh`, don't forget to have `curl` installed:
+```bash
+sudo apt install curl
+```
