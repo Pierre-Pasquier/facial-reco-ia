@@ -18,9 +18,9 @@ models = [
 ]
 
 #face recognition
-def face_recognition(image_path):
+def face_recognition(image_path, database_path):
     dfs = DeepFace.find(img_path = image_path,
-        db_path = "C:/Users/pierr/.deepface/database", 
+        db_path = database_path, 
         model_name = models[1]
     )
     print(dfs)
