@@ -9,7 +9,7 @@ import os
 
 
 
-models = [
+models_recognition = [
   "VGG-Face", 
   "Facenet", 
   "Facenet512", 
@@ -21,14 +21,25 @@ models = [
   "SFace",
 ]
 
-directory = os.getcwd() + '/videos_test/'
+models = [
+  'opencv', 
+  'ssd', 
+  'dlib', 
+  'mtcnn', 
+  'retinaface', 
+  'mediapipe'
+]
 
-videos = ['Crowd walking on street.mp4',
+directory = os.getcwd() + '/src/library_test/deepface/videos_test/'
+print(directory)
+
+list_of_videos = ['Crowd walking on street.mp4',
           'Crowd of People Walking in London.mp4',
           'Crowd walking forward NYC.mp4',
           'Walking Around New York City.mp4',
           'Walking Crowd.mp4']
 
+videos = ['Crowd walking on street.mp4']
 
 
 
@@ -55,8 +66,7 @@ for vid in videos :
 
         while ret :
             current_frame += 1
-            if current_frame % 30 == 0 :
-                print("Currently at frame " + str(current_frame) + " out of " + str(length))
+            print("Currently at frame " + str(current_frame) + " out of " + str(length))
             # Grab a single frame of video
             ret, frame = video.read()
 
@@ -70,19 +80,43 @@ for vid in videos :
             rgb_small_frame = small_frame[:, :, ::-1]
             
             # Find all the faces and face encodings in the current frame of video
+            start = time.time()
             try :
-                face_locations = DeepFace.represent(frame, model_name = model)
+                face_locations_opencv = DeepFace.represent(frame, detector_backend = 'opencv')
             except :
-                face_locations = []
+                face_locations_opencv = []
+            try :
+                face_locations_ssd = DeepFace.represent(frame, detector_backend = 'ssd')
+            except :
+                face_locations_ssd = []
+            try :
+                face_locations_mtcnn = DeepFace.represent(frame, detector_backend = 'mtcnn')
+            except :
+                face_locations_mtcnn = []
 
 
-            if len(face_locations) != 0 :
-                for k in range(len(face_locations)):
-                    x,y,w,h = face_locations[k]['facial_area']['x'], face_locations[k]['facial_area']['y'], face_locations[k]['facial_area']['w'], face_locations[k]['facial_area']['h']
+            if len(face_locations_opencv) != 0 :
+                for k in range(len(face_locations_opencv)):
+                    x,y,w,h = face_locations_opencv[k]['facial_area']['x'], face_locations_opencv[k]['facial_area']['y'], face_locations_opencv[k]['facial_area']['w'], face_locations_opencv[k]['facial_area']['h']
                     
                     # Draw a box around the face
                     cv2.rectangle(frame, (x,y), (x+w,y+h), (0, 0, 255), 2)
 
+            if len(face_locations_ssd) != 0 :
+                for k in range(len(face_locations_ssd)):
+                    x,y,w,h = face_locations_ssd[k]['facial_area']['x'], face_locations_ssd[k]['facial_area']['y'], face_locations_ssd[k]['facial_area']['w'], face_locations_ssd[k]['facial_area']['h']
+                    
+                    # Draw a blue box around the face
+                    cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+
+            if len(face_locations_mtcnn) != 0 :
+                for k in range(len(face_locations_mtcnn)):
+                    x,y,w,h = face_locations_mtcnn[k]['facial_area']['x'], face_locations_mtcnn[k]['facial_area']['y'], face_locations_mtcnn[k]['facial_area']['w'], face_locations_mtcnn[k]['facial_area']['h']
+                    
+                    # Draw a box around the face
+                    cv2.rectangle(frame, (x,y), (x+w,y+h), (0, 255, 0), 2)
+
+            print(time.time() - start)
 
             #writer(frame, "Fps={:06.2f}".format(fps()))
             result.write(frame) 
