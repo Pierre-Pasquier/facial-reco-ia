@@ -27,7 +27,7 @@ length = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
 frame_width = int(video.get(3)) 
 frame_height = int(video.get(4))
 size = (frame_width, frame_height)
-result = cv2.VideoWriter(directory + 'labelled_videos/' + video_name[:-4] + '_labelled.mp4',  
+result = cv2.VideoWriter(directory + 'labelled_videos/' + video_name[:-4] + '_labelled_testtttt.mp4',  
                         cv2.VideoWriter_fourcc(*'mp4v'), 
                         30, size)
 
@@ -71,31 +71,31 @@ while ret :
     start = time.time()
     start_opencv = time.time()
     try :
-        face_locations_opencv = DeepFace.represent(frame, detector_backend = 'opencv')
+        face_locations_opencv = DeepFace.extract_faces(frame, detector_backend = 'opencv')
     except :
         face_locations_opencv = []
     time_opencv += time.time() - start_opencv
     start_ssd = time.time()
     try :
-        face_locations_ssd = DeepFace.represent(frame, detector_backend = 'ssd')
+        face_locations_ssd = DeepFace.extract_faces(frame, detector_backend = 'ssd')
     except :
         face_locations_ssd = []
     time_ssd += time.time() - start_ssd
     start_mtcnn = time.time()
     try :
-        face_locations_mtcnn = DeepFace.represent(frame, detector_backend = 'mtcnn')
+        face_locations_mtcnn = DeepFace.extract_faces(frame, detector_backend = 'mtcnn')
     except :
         face_locations_mtcnn = []
     time_mtcnn += time.time() - start_mtcnn
     start_retina = time.time()
     try :
-        face_locations_retina = DeepFace.represent(frame, detector_backend = 'retinaface')
+        face_locations_retina = DeepFace.extract_faces(frame, detector_backend = 'retinaface')
     except :
         face_locations_retina = []
     time_retina += time.time() - start_retina
     start_dlib = time.time()
     try :
-        face_locations_dlib = DeepFace.represent(frame, detector_backend = 'dlib')
+        face_locations_dlib = DeepFace.extract_faces(frame, detector_backend = 'dlib')
     except :
         face_locations_dlib = []
         print("Dlib failed")
