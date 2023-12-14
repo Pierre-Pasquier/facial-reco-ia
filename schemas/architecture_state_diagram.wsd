@@ -1,0 +1,81 @@
+@startuml architecture
+
+[*] --> Camera
+Camera : check if there is any camera
+Camera: connected to the device
+
+Camera -> Person
+Person : check if there is a person
+Person : in the camera field
+
+Person --> Face : person detected
+Person -> Person : no person detected
+Face : check if there is a face
+Face : in the camera field
+
+Face --> Reco : face detected
+Face --> Person : no face detected for n seconds
+Reco --> Face : reco end
+
+state Reco {
+    state "Vector calculation" as vector
+    state "Distance calculation" as distance
+    state c1 <<choice>>
+    state join <<join>>
+
+    [*] --> vector
+    vector : unique vector calculation
+    vector : to identify a face
+
+    vector -> distance
+    distance : distance between the vector
+    distance : calculated and the all the
+    distance : other vectors
+
+    distance --> c1
+    c1 --> Addition : match found
+    c1 --> Creation : no match
+    Addition --> join
+    Creation --> join
+    join --> [*]
+    
+    state Addition {
+        Addition : addition of data to
+        Addition : a corresponding person
+
+        [*] --> Folder1
+        Folder1 : Select corresponding
+        Folder1 : folder
+        
+        Folder1 -> Register1
+        Register1 : Register face image
+        Register1 : Register face vector
+
+        Register1 -> Update1
+        Update1 : Update person
+        Update1 : global vector
+
+        Update1 --> [*]
+    }
+
+    state Creation {
+        Creation : addition of data to
+        Creation : a corresponding person
+
+        [*] --> Folder2
+        Folder2 : Create new
+        Folder2 : folder
+        
+        Folder2 -> Register2
+        Register2 : Register face image
+        Register2 : Register face vector
+
+        Register2 -> Update2
+        Update2 : Create person
+        Update2 : global vector
+
+        Update2 --> [*]
+    }
+}
+
+@enduml
