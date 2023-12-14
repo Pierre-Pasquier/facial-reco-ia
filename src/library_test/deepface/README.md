@@ -39,5 +39,7 @@ Contains some functions to test deepface :
 - camera_detection_test() : apply the detection function on each frame of the webcam video live stream
 
 
+## Save faces image
 
+To save cropped images of faces detected on a given video. This was a just a test.
 
