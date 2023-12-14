@@ -2,6 +2,7 @@ import os
 import sys
 sys.path.append(os.getcwd())
 
+import cv2
 import time
 import click
 import dlib
@@ -31,6 +32,8 @@ def main(face_detector, folder_path, label_path, iou_threshold, use_cpu):
 
         start = time.time()
 
+        img = cv2.resize(img, (0,0), fx=0.75, fy=0.75)
+        
         dets = detector(img, 1)
 
         processing_times.append(time.time() - start)

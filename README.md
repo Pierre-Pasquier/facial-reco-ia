@@ -44,3 +44,11 @@ To download the models using the bash script `bash/dlib_models.sh`, don't forget
 ```bash
 sudo apt install curl
 ```
+
+## Troubleshooting
+
+**Trouble**:
+Running the script `src/library_test/dlib/face_detector_test.py`, the Jetson Nano Orin devkit was crashing because of RAM excessive use.
+
+**Solution**: 
+Use images with smaller resolution prevent the crash of the devkit.
