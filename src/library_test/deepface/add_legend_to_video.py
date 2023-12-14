@@ -27,15 +27,22 @@ result = cv2.VideoWriter(directory + video_name[:-4] + '_legended.mp4',
 ret = True
 current_frame = 0
 
+
+text_x = 10
+text_y = frame_height - 50
+
 # Initialize legend text
-legend_text = "OpenCV: Red / SSD: Blue / MTCNN: Green / RetinaFace: Cyan"
+legend_text = "OpenCV: " + str(round(1.7248, 2)) + "s/SSD: " + str(round(0.3799, 2)) + "s/MTCNN: " + str(round(5.25523, 2)) + "s/RetinaFace: " + str(round(10.15370509, 2)) + "s/Dlib: " + str(round(0.00012236, 2)) + "s"
+
+
+
 
 while ret :
     # Grab a single frame of video
     ret, frame = video.read()
 
     # Add legend text to the frame
-    cv2.putText(frame, legend_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)
+    cv2.putText(frame, legend_text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)
 
     # Write the frame to the result video
     result.write(frame)

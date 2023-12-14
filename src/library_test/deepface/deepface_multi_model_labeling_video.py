@@ -95,9 +95,10 @@ while ret :
     time_retina += time.time() - start_retina
     start_dlib = time.time()
     try :
-        face_locations_dlib = DeepFace.represent(frame, detector_backend = 'Dlib')
+        face_locations_dlib = DeepFace.represent(frame, detector_backend = 'dlib')
     except :
         face_locations_dlib = []
+        print("Dlib failed")
     time_dlib += time.time() - start_dlib
 
 
@@ -161,8 +162,8 @@ cv2.destroyAllWindows()
 
 
 text_width, text_height = cv2.getTextSize(legend_text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)[0]
-text_x = frame_width - text_width - 10
-text_y = frame_height - text_height - 10
+text_x = 10
+text_y = frame_height - 50
 legend_text = "OpenCV: " + str(round(mean_time_opencv, 2)) + "s / SSD: " + str(round(mean_time_ssd, 2)) + "s / MTCNN: " + str(round(mean_time_mtcnn, 2)) + "s / RetinaFace: " + str(round(mean_time_retina, 2)) + "s / Dlib: " + str(round(mean_time_dlib, 2)) + "s"
 # Write time results one the video
 while ret :

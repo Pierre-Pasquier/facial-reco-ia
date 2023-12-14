@@ -40,8 +40,6 @@ videos = ['Crowd walking on street.mp4',
           'Walking Crowd.mp4']
 
 
-
-
 for vid in videos :
     time_video_start = time.time()
     for model in face_detection_models :
@@ -84,6 +82,7 @@ for vid in videos :
                 face_locations = DeepFace.represent(frame, detector_backend = model)
             except :
                 face_locations = []
+                print("No face detected")
 
 
             if len(face_locations) != 0 :
