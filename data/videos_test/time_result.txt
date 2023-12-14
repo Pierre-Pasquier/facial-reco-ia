@@ -1,0 +1,22 @@
+Video Crowd walking on street.mp4 labelled with model VGG-Face in 823.2424130439758 seconds for 414 frames -> rate of 1.9885082440675745 seconds per frame 
+Video Crowd walking on street.mp4 labelled with model VGG-Face in 7.001937389373779 seconds for 414 frames -> rate of 0.0169128922448642 seconds per frame 
+Video Crowd walking on street.mp4 labelled with model Facenet in 6.903589487075806 seconds for 414 frames -> rate of 0.016675336925303878 seconds per frame 
+Video Crowd walking on street.mp4 labelled with model Facenet512 in 6.884707450866699 seconds for 414 frames -> rate of 0.016629728142190096 seconds per frame 
+Video Crowd walking on street.mp4 labelled with model OpenFace in 6.827619552612305 seconds for 414 frames -> rate of 0.016491834668145664 seconds per frame 
+Video Crowd walking on street.mp4 labelled with model DeepFace in 6.872328758239746 seconds for 414 frames -> rate of 0.01659982791845349 seconds per frame 
+Video Crowd walking on street.mp4 labelled with model DeepID in 6.982912540435791 seconds for 414 frames -> rate of 0.016866938503468095 seconds per frame 
+Video Crowd walking on street.mp4 labelled with model ArcFace in 7.390816926956177 seconds for 414 frames -> rate of 0.017852214799411056 seconds per frame 
+Video Crowd walking on street.mp4 labelled with model Dlib in 7.1396870613098145 seconds for 414 frames -> rate of 0.0172456209210382 seconds per frame 
+Video Crowd walking on street.mp4 labelled with model SFace in 7.220529556274414 seconds for 414 frames -> rate of 0.017440892648005833 seconds per frame 
+Video Crowd walking on street.mp4 labelled with every model in 7.220529556274414 seconds for 414 frames
+
+Video Crowd walking on street cropped.mp4 labelled with model opencv in 25.627435445785522 seconds for 15 frames -> rate of 1.7084956963857014 seconds per frame 
+Video Crowd walking on street cropped.mp4 labelled with model ssd in 26.46798586845398 seconds for 15 frames -> rate of 1.7645323912302653 seconds per frame 
+Video Crowd walking on street cropped.mp4 labelled with model opencv in 145.32327961921692 seconds for 152 frames -> rate of 0.9560742080211639 seconds per frame 
+Video Crowd walking on street cropped.mp4 labelled with model ssd in 41.93539118766785 seconds for 152 frames -> rate of 0.2758907314978148 seconds per frame 
+Video Crowd walking on street cropped.mp4 labelled with model dlib in 188.59540224075317 seconds for 152 frames -> rate of 1.240759225268113 seconds per frame 
+Video Crowd walking on street cropped.mp4 labelled with model mtcnn in 530.9182975292206 seconds for 152 frames -> rate of 3.492883536376451 seconds per frame 
+Video Crowd walking on street cropped.mp4 labelled with model opencv in 745.7991964817047 seconds for 152 frames -> rate of 4.906573661063847 seconds per frame 
+Video Crowd walking on street cropped.mp4 labelled with model dlib in 765.7092406749725 seconds for 152 frames -> rate of 5.037560793914293 seconds per frame 
+Video Crowd walking on street cropped.mp4 labelled with every model in 765.7092406749725 seconds for 152 frames
+

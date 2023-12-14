@@ -30,7 +30,7 @@ face_detection_models = [
   'mediapipe'
 ]
 
-directory = os.getcwd() + '/src/library_test/deepface/videos_test/'
+directory = os.getcwd() + '/data/videos_test/'
 print(directory)
 
 videos = ['Crowd walking on street.mp4',

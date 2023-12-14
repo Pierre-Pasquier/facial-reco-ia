@@ -7,7 +7,7 @@ import os
 
 
 
-directory = os.getcwd() + '/src/library_test/deepface/videos_test/labelled_videos/'
+directory = os.getcwd() + '/data/videos_test/labelled_videos/'
 
 
 

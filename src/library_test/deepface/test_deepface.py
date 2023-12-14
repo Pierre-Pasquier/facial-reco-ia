@@ -118,8 +118,8 @@ def camera_analyze_test():
     cv2.destroyAllWindows()
 
 
-def camera_detection_test():
-    video = cv2.VideoCapture('C:/Users/pierr/Desktop/Telecom_Nancy/3A/PI/Vidéos test/Crowd walking forward NYC B-Roll.mp4')
+def video_detection_test(video_path, output_path):
+    video = cv2.VideoCapture(video_path)
 
     # Initialize some variables
     face_locations = []
@@ -131,7 +131,7 @@ def camera_detection_test():
     frame_width = int(video.get(3)) 
     frame_height = int(video.get(4))
     size = (frame_width, frame_height)
-    result = cv2.VideoWriter('C:/Users/pierr/Desktop/Telecom_Nancy/3A/PI/Vidéos test/Result/Crowd walking forward NYC B-Roll_OpenFace.mp4',  
+    result = cv2.VideoWriter(output_path,  
                             cv2.VideoWriter_fourcc(*'mp4v'), 
                             30, size) 
 

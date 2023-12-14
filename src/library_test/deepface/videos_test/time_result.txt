@@ -1,1 +1,0 @@
-Video Crowd walking on street.mp4 labelled with model VGG-Face in 823.2424130439758 seconds for 414 frames -> rate of 1.9885082440675745 seconds per frame 
