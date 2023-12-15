@@ -35,6 +35,9 @@ This script take optionnal commands:
 - `--iou_threshold <float_min_iou>` to specify the threshold you want to use to consider one detection correct;
 - `--use_cpu` if you want to use CPU instead of GPU (default).
 
+Here are the results of the script running with the jetson nano orin (GPU) on the small dataset:
+- Average time taken per image: 0.29 seconds
+
 ### Face recognition test
 
 The script `face_reco_test.py` evaluate the time taken by the face recognition model to calculate the vector identifying a face.
@@ -52,5 +55,5 @@ This script take optionnal commands:
 - `--align` if you want to align the face for better face recognition performances.
 
 Here are the results of the script running with the jetson nano orin (GPU) on the small dataset:
-- Average time taken per face: 0.01273804444533128 seconds
-- Average time taken per image: 0.03696376085281372 seconds
+- Average time taken per face: 0.012 seconds
+- Average time taken per image: 0.036 seconds
