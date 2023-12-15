@@ -1,6 +1,6 @@
 # DLib Library
 
-## Dowload models
+## Download models
 
 Go to the project root and do the following commands to download the two required models:
 ```bash
