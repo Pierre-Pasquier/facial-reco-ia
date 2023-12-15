@@ -1,6 +1,7 @@
 import os
 import dlib
 import glob
+import numpy as np
 
 
 shape_predictor = 'models/shape_predictor_5_face_landmarks.dat'
@@ -15,7 +16,7 @@ person_vectors = []
 for f in glob.glob(os.path.join(folder_path, 'persons', "*", "*.txt")):
     with open(f, 'r') as file:
         person_vectors += [
-            eval(file.readline())
+            np.array(eval(file.readline()))
         ]
 
 for f in glob.glob(os.path.join(folder_path, 'temp', "*.jpg")):
@@ -30,4 +31,16 @@ for f in glob.glob(os.path.join(folder_path, 'temp', "*.jpg")):
     face_chip = dlib.get_face_chip(img, shape)
     face_descriptor = facerec.compute_face_descriptor(face_chip)
 
-    print(face_descriptor)
+    for i in range(len(person_vectors)):
+        distance = np.linalg.norm(person_vectors[i] - np.array(face_descriptor))
+
+        if distance > 0.43:
+            # TODO
+            # register in new directory
+            # calculate representing vector
+            exit()
+        else:
+            # TODO
+            # register in existing directory
+            # update representing vector
+            exit()
