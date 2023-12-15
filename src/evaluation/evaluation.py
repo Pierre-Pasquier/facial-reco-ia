@@ -94,9 +94,13 @@ def convert_coordinates(box_trbl):
 
     return [x, y, w, h]
 
-def evaluation(label_dict, detected_boxes, iou_threshold):
+def evaluation(label_dict, detected_boxes, iou_threshold, resize_factor):
     ground_truth = label_dict[1]
     ground_truth_boxes = [ground_truth[i][:4] for i in range(label_dict[0])]
+    
+    for i in range(len(ground_truth_boxes)):
+        for j in range(len(ground_truth_boxes[i])):
+            ground_truth_boxes[i][j] = ground_truth_boxes[i][j] * resize_factor
 
     if len(detected_boxes) == 0:
         print("Evaluation impossible since no visage where detected")

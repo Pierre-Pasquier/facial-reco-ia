@@ -33,6 +33,7 @@ python3 face_detector_test.py \
 This script take optionnal commands:
 - `--label_path <label_file_path>` if you want to do an evaluation of the detector;
 - `--iou_threshold <float_min_iou>` to specify the threshold you want to use to consider one detection correct;
+- `--resize_factor <float_resize_factor>` to specify the resize factor of the image;
 - `--use_cpu` if you want to use CPU instead of GPU (default).
 
 Here are the results of the script running with the jetson nano orin (GPU) on the small dataset:

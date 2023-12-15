@@ -17,8 +17,9 @@ from src.evaluation.evaluation import evaluation
 @click.option('--folder_path', type=str, help='Path to the image folder', required=True)
 @click.option('--label_path', type=str, help='Path to the label json file', required=False)
 @click.option('--iou_threshold', type=float, help='IoU threshold for evaluation', required=False, default=0.5)
+@click.option('--resize_factor', type=float, help='Resize image factor', required=False, default=0.5)
 @click.option('--use_cpu', is_flag=True, help='Use CPU instead of GPU')
-def main(face_detector, folder_path, label_path, iou_threshold, use_cpu):
+def main(face_detector, folder_path, label_path, iou_threshold, resize_factor, use_cpu):
     if use_cpu:
         detector = dlib.get_frontal_face_detector()
     else:
@@ -32,7 +33,7 @@ def main(face_detector, folder_path, label_path, iou_threshold, use_cpu):
 
         start = time.time()
 
-        img = cv2.resize(img, (0,0), fx=0.75, fy=0.75)
+        img = cv2.resize(img, (0,0), fx=resize_factor, fy=resize_factor)
         
         dets = detector(img, 1)
 
@@ -67,7 +68,7 @@ def main(face_detector, folder_path, label_path, iou_threshold, use_cpu):
                 for _, d in enumerate(dets):
                     detected_boxes.append([d.rect.top(), d.rect.right(), d.rect.bottom(), d.rect.left()])
 
-            true_positives, false_positives, false_negatives = evaluation(label_dict[file_name], detected_boxes, iou_threshold)
+            true_positives, false_positives, false_negatives = evaluation(label_dict[file_name], detected_boxes, iou_threshold, resize_factor)
             true_positives_count += true_positives
             false_positives_count += false_positives
             false_negatives_count += false_negatives
