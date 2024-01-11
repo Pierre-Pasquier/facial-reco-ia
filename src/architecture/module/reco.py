@@ -79,4 +79,5 @@ for f in glob.glob(os.path.join(folder_path, 'temp', "*.jpg")):
         # update known person dict
         person_vectors[min_key] = new_vector
 
-exit(1)
+print("1")
+exit()
