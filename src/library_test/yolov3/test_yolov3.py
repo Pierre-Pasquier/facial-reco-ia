@@ -33,7 +33,7 @@ while True:
     layer_names = net.getLayerNames()
     output_layers = [layer_names[i-1] for i in net.getUnconnectedOutLayers()]
     outs = net.forward(output_layers)
-
+    
     class_ids = []
     confidences = []
     boxes = []
