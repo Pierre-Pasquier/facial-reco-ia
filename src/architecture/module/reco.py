@@ -40,21 +40,18 @@ for f in glob.glob(os.path.join(folder_path, 'temp', "*.jpg")):
         distance = np.linalg.norm(value - np.array(face_descriptor))
 
         distance_summary[key] = {'value': value, 'distance': distance}
-
-    print("FILE", f, distance_summary)
     
     min_key = None
     min_value = None
     min_distance = float('inf')
     
+    # get the best corresponding known person
     for key, data in distance_summary.items():
         distance = data['distance']
         if distance < min_distance:
             min_key = key
             min_value = data['value']
             min_distance = distance
-
-    print("MIN_DISTANCE", min_distance)
 
     if min_distance >= 0.40:
         # register in new directory
@@ -67,8 +64,7 @@ for f in glob.glob(os.path.join(folder_path, 'temp', "*.jpg")):
             file.write(str(list(face_descriptor)))
         # update known person dict
         person_vectors[new_directory] = np.array(face_descriptor)
-        # debug
-        print("Person added to new directory", "\n\n\n")
+
     if min_distance < 0.40:
         # register in existing directory
         os.rename(f, os.path.join(min_key, os.path.basename(f)))
@@ -82,6 +78,5 @@ for f in glob.glob(os.path.join(folder_path, 'temp', "*.jpg")):
             file.write(str(list(new_vector)))
         # update known person dict
         person_vectors[min_key] = new_vector
-        # debug
-        print("Person added to existing directory", "\n\n\n")
-exit()
+
+exit(1)
