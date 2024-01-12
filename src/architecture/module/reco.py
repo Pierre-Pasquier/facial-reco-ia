@@ -6,7 +6,7 @@ import numpy as np
 
 shape_predictor = 'models/shape_predictor_5_face_landmarks.dat'
 face_reco = 'models/dlib_face_recognition_resnet_model_v1.dat'
-folder_path = 'src/architecture/images'
+folder_path = 'images'
 
 sp = dlib.shape_predictor(shape_predictor)
 facerec = dlib.face_recognition_model_v1(face_reco)
@@ -80,4 +80,3 @@ for f in glob.glob(os.path.join(folder_path, 'temp', "*.jpg")):
         person_vectors[min_key] = new_vector
 
 print("1")
-exit()
