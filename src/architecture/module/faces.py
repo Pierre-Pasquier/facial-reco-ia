@@ -5,6 +5,7 @@ import numpy as np
 import sys
 import dlib
 import cv2
+import time
 #import face_recognition
 
 # choose the numero of camera in argument if there are more than one, default 0 
@@ -14,17 +15,22 @@ if num_cam not in set('0123'):
     print("Bad camera num, must be 0,1,2  or 3")
     exit()
 
-# clear the stdout
-print("\33c")
+face_detector = "models/mmod_human_face_detector.dat"
 
-def save_cropped_faces(faces, image, frame):
+# clear the stdout
+#print("\33c")
+
+def save_cropped_faces(faces, image, frame, qf):
+    # qf = quality_factor
     # Save cropped faces as separate images in a directory
     for i, face in enumerate(faces):
-        print(face)
-        (x, y, w, h) = (face.left(), face.top(), face.width(), face.height())
+        #print(face)
+        (x, y, w, h) = (int(face.rect.left()/qf), int(face.rect.top()/qf), int(face.rect.width()/qf), int(face.rect.height()/qf))
         cropped_face = image[y:y+h, x:x+w]
-        cv2.imwrite(f"../images/temp/face_{i}_frame_{frame}.jpg", cropped_face)
-
+        try:
+            cv2.imwrite(f"images/temp/face_{i}_frame_{frame}.jpg", cropped_face)
+        except:
+            pass
 
 
 def convert_sample_to_image(sample):
@@ -35,20 +41,8 @@ def convert_sample_to_image(sample):
     image = np.ndarray((H, W, C),buffer=buf.extract_dup(0, buf.get_size()),dtype=np.uint8)
     return image
 
-def pixelin(p,loc):
-    return p[0]>=loc[0] and p[1]>=loc[2] and p[1]<=loc[1] and p[0]<=loc[3]
-
-def print_image(image,locations=[],N=20):
-    # display an image on the stdout with a reduction of N 
-    print("\33c")
-    H,W = image.shape[:2]
-    for i in range(1,H,N):
-        for j in range(1,W,N):
-            if 1 or locations and sum([pixelin([i,j],l) for l in locations]):
-                r,g,b=image[i,j]
-                print(f"\33[{i//N};{(j*2)//N}H\33[48;2;{r};{g};{b}m  \33[0m")
  
-def main():
+def main(quality_factor=0.3):
     ### GSTREAMER IMPORT ###
     gi.require_version('Gst','1.0')
     gi.require_version('GstApp','1.0')
@@ -73,29 +67,37 @@ def main():
     SYNC = pipeline.get_by_name("sink")
     pipeline.set_state(Gst.State.PLAYING)
     ###
-    
-    detector = dlib.get_frontal_face_detector()
-    
+
+    detector = dlib.cnn_face_detection_model_v1(face_detector)
+
     ### IMAGE PROCESSING LOOP ###
-    for i in range(1000):
+    flag = 0
+    for i in range(100):
+        start = time.time()
         # get a sample from SYNC output
         sample = SYNC.try_pull_sample(Gst.SECOND)
         if sample is not None : 
             # get the image as a numpy array from the sample
             image = convert_sample_to_image(sample)
-            image = cv2.resize(image, (0,0), fx=0.25, fy=0.25)
-            faces_detected = detector(image, 1)
-            if faces_detected != []:
-                save_cropped_faces(faces_detected, image, i)
-                print("image saved")
-            print(faces_detected)    
+            image = image[:, :, ::-1]
+            small_image = cv2.resize(image, (0,0), fx=quality_factor, fy=quality_factor)
+            faces_detected = detector(small_image, 1)
+            #print(len(faces_detected))
+            if len(faces_detected) != 0:
+                save_cropped_faces(faces_detected, image, i, quality_factor)
+                #print("image saved")
+                flag = 1
+                #exit(1)
+            #print(faces_detected)
+        #print(f"FPS: {1/(time.time() - start)}")
     ###
-    
-    
+    print(flag)
+
+
     # close the pipeline and finish the programm properly 
     pipeline.set_state(Gst.State.NULL)
     main_loop.quit()
     main_loop_thread.join()
-
+    
 if __name__ == "__main__":
     main()
