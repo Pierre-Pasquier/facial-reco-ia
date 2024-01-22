@@ -13,12 +13,13 @@ execute(){
     t1=$(echo $line  | awk -F $separator '{print $4}') 
     table=($t0 $t1)
     echo "$1 is running ..."
-    
+    time0=$(date "+%s.%3N")    
     $cmd 2> return_value_buffer
+    time1=$(date "+%s.%3N")    
     return_value=$(cat return_value_buffer)
     rm return_value_buffer
 
-    echo "$1 finish with return value $return_value"
+    echo "$1 finish with return value $return_value in $(echo $time1 - $time0 | bc) s"
     if [[ "$return_value" == "0" || "$return_value" == "1" ]];
     then
         next_process=${table[$return_value]}
@@ -45,7 +46,6 @@ do
 
         name=$(echo $line | awk -F $separator '{print $1}') 
 	process_list[$name]=$line
-
 
         if [ $i -eq 2 ];then
             process_0=$name 	    
