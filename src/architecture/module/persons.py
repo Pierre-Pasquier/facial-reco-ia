@@ -122,7 +122,7 @@ def main(num_cam=0, frame_without_detection=150, quality_factor=0.25):
                         #x = int(c_x - w/2)
                         #y = int(c_y - h/2)
                         #save_cropped_faces(x,y,w,h,image,i, compt)
-                        print("1")
+                        print("1", file=sys.stderr)
                         exit_pipeline(pipeline, main_loop, main_loop_thread, Gst)
                         
                 #print("FPS : " + str(1/(time.time() - start)))
