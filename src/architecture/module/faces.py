@@ -6,6 +6,7 @@ import sys
 import dlib
 import cv2
 import time
+import datetime
 #import face_recognition
 
 # choose the numero of camera in argument if there are more than one, default 0 
@@ -28,7 +29,7 @@ def save_cropped_faces(faces, image, frame, qf):
         (x, y, w, h) = (int(face.rect.left()/qf), int(face.rect.top()/qf), int(face.rect.width()/qf), int(face.rect.height()/qf))
         cropped_face = image[y:y+h, x:x+w]
         try:
-            cv2.imwrite(f"images/temp/face_{i}_frame_{frame}.jpg", cropped_face)
+            cv2.imwrite(f"images/temp/face_{i}_{datetime.datetime.utcnow()}.jpg", cropped_face)
         except:
             pass
 
