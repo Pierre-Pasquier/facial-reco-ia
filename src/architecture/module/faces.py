@@ -41,8 +41,10 @@ def convert_sample_to_image(sample):
     image = np.ndarray((H, W, C),buffer=buf.extract_dup(0, buf.get_size()),dtype=np.uint8)
     return image
 
- 
-def main(quality_factor=0.3):
+@click.command()
+@click.option('--quality_factor', type=float, help='Multiply the image quality by this factor', required=False, default=0.3)
+@click.option('--verbose', type=float, help='Activate the verbose', required=False, default=False)
+def main(quality_factor, verbose):
     ### GSTREAMER IMPORT ###
     gi.require_version('Gst','1.0')
     gi.require_version('GstApp','1.0')
@@ -89,9 +91,10 @@ def main(quality_factor=0.3):
                 flag = 1
                 #exit(1)
             #print(faces_detected)
-        #print(f"FPS: {1/(time.time() - start)}")
+        if verbose:
+            print(f"FPS: {1/(time.time() - start)}")
     ###
-    print(flag)
+    print(flag, file=sys.stderr)
 
 
     # close the pipeline and finish the programm properly 
