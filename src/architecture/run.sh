@@ -7,10 +7,10 @@ execute(){
         echo "process $1 not found in the transition table"
         echo "Program over"
         exit 1
-    fi   
-    cmd=$(echo $line | awk -F ';' '{print $2}') 
-    t0=$(echo $line | awk -F ';' '{print $3}') 
-    t1=$(echo $line | awk -F ';' '{print $4}') 
+    fi  
+    cmd=$(echo $line | awk -F $separator '{print $2}') 
+    t0=$(echo $line  | awk -F $separator '{print $3}') 
+    t1=$(echo $line  | awk -F $separator '{print $4}') 
     table=($t0 $t1)
     echo "$1 is running ..."
     return_value=$($cmd)
@@ -26,7 +26,9 @@ execute(){
     fi
 }
 
+separator=;
 nb_process=$(cat transition.csv | wc -l) 
+
 
 echo "Reading transition.csv file"
 for ((i=2; i <= $nb_process; i++))
@@ -37,7 +39,7 @@ do
     then
         echo "ligne $i : $line"
 
-        name=$(echo $line | awk -F ';' '{print $1}') 
+        name=$(echo $line | awk -F $separator '{print $1}') 
         process_list[$name]=$line
 
         if [ $i -eq 2 ];then
@@ -46,4 +48,4 @@ do
     fi
 done
 
-execute $process_0
+execute $process_0 & python3 signalhandler.py
