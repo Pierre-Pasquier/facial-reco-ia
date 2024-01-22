@@ -10,4 +10,4 @@ except KeyboardInterrupt:
 finally:
     print("KeyboardInterrupt")
     print("signal handler OFF")
-    os.system("pkill -9 python3")
+    os.system("pkill -15 python3")
