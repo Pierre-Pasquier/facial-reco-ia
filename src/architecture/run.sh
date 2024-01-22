@@ -26,7 +26,7 @@ execute(){
     fi
 }
 
-separator=;
+separator=';'
 nb_process=$(cat transition.csv | wc -l) 
 
 
@@ -40,10 +40,11 @@ do
         echo "ligne $i : $line"
 
         name=$(echo $line | awk -F $separator '{print $1}') 
-        process_list[$name]=$line
+	process_list[$name]=$line
+
 
         if [ $i -eq 2 ];then
-            process_0=$name        
+            process_0=$name 	    
         fi
     fi
 done
