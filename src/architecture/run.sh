@@ -13,7 +13,11 @@ execute(){
     t1=$(echo $line  | awk -F $separator '{print $4}') 
     table=($t0 $t1)
     echo "$1 is running ..."
-    return_value=$($cmd)
+    
+    $cmd 2> return_value_buffer
+    return_value=$(cat return_value_buffer)
+    rm return_value_buffer
+
     echo "$1 finish with return value $return_value"
     if [[ "$return_value" == "0" || "$return_value" == "1" ]];
     then
