@@ -1,4 +1,5 @@
 import os
+import sys
 import dlib
 import glob
 import numpy as np
@@ -79,4 +80,4 @@ for f in glob.glob(os.path.join(folder_path, 'temp', "*.jpg")):
         # update known person dict
         person_vectors[min_key] = new_vector
 
-print("1")
+print("1", file=sys.stderr)
