@@ -1,5 +1,3 @@
-#!/bin/bash
-
 mkdir -p models
 cd models
 
