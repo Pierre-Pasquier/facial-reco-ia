@@ -7,11 +7,12 @@ import dlib
 import cv2
 import time
 import datetime
+import click
 #import face_recognition
 
 # choose the numero of camera in argument if there are more than one, default 0 
-args = sys.argv[1:]
-num_cam = '0' if not args else args.pop(0)
+#args = sys.argv[2:]
+num_cam = '0' # if not args else args.pop(0)
 if num_cam not in set('0123'):
     print("Bad camera num, must be 0,1,2  or 3")
     exit()
@@ -44,7 +45,7 @@ def convert_sample_to_image(sample):
 
 @click.command()
 @click.option('--quality_factor', type=float, help='Multiply the image quality by this factor', required=False, default=0.3)
-@click.option('--verbose', type=float, help='Activate the verbose', required=False, default=False)
+@click.option('--verbose','-v', is_flag=True, type=bool, help='Activate the verbose', required=False)
 def main(quality_factor, verbose):
     ### GSTREAMER IMPORT ###
     gi.require_version('Gst','1.0')
@@ -75,7 +76,7 @@ def main(quality_factor, verbose):
 
     ### IMAGE PROCESSING LOOP ###
     flag = 0
-    for i in range(100):
+    for i in range(1000):
         start = time.time()
         # get a sample from SYNC output
         sample = SYNC.try_pull_sample(Gst.SECOND)
