@@ -49,7 +49,6 @@ def main(verbose, threshold):
             distance_summary[key] = {'value': value, 'distance': distance}
         
         min_key = None
-        min_value = None
         min_distance = float('inf')
         
         # get the best corresponding known person
@@ -57,7 +56,6 @@ def main(verbose, threshold):
             distance = data['distance']
             if distance < min_distance:
                 min_key = key
-                min_value = data['value']
                 min_distance = distance
 
         if min_distance >= threshold:
