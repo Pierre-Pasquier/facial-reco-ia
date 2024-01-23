@@ -36,7 +36,7 @@ execute(){
         else
             echo -e "[ $1 : NEXT PROCESS ]   : none"
             echo -e "\x1b[1;33m"
-            echo -e "[ program : STATE ]     : finish"	
+	    echo -e "[ program : END ]       : $(date "+%H:%M:%S")"
             
 	    signal_handler_pid=$(ps ax | grep 'python3 signalhandler.py' | grep -v grep | awk '{print $1}')
        	    kill -15 $signal_handler_pid
@@ -46,8 +46,8 @@ execute(){
         fi
     else
         echo -e "\x1b[1;33m"
-        echo -e "[ program : ERROR ]     : process $1 not found in the transition table"
-        echo -e "[ program : STATE ]     : finish"
+        echo -e "[ program : INFO ]      : process $1 not found in the transition table"
+	echo -e "[ program : END ]       : $(date "+%H:%M:%S")"
 	
 	signal_handler_pid=$(ps ax | grep 'python3 signalhandler.py' | grep -v grep | awk '{print $1}')
        	kill -15 $signal_handler_pid
@@ -65,6 +65,10 @@ echo "╭─╴ ╭─╮ ╭─╮ ╵ ╭─╮ ╷      ┌─╮ ╭─╴ �
 echo "├╴  ├─┤ │   │ ├─┤ │   ─  ├┬╯ ├╴  │   │ │"
 echo "╵   ╵ ╵ ╰─╯ ╵ ╵ ╵ ╰─╴    ╵╵  ╰─╴ ╰─╯ ╰─╯"
 
+echo -e "\x1b[1;33m"
+echo -e "[ program : START ]     : $(date "+%H:%M:%S")"
+echo -e "\x1b[0m"
+	
 
 echo "Reading transition.csv file"
 for ((i=2; i <= $nb_process; i++))
@@ -84,4 +88,7 @@ do
     fi
 done
 
-execute $process_0 & python3 signalhandler.py
+python3 aff_process.py ${!process_list[@]}
+
+execute $process_0 & python3 signalhandler.py $separator
+
