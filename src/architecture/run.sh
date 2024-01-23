@@ -18,7 +18,7 @@ execute(){
         echo -e "\x1b[0m"
        
         time0=$(date "+%s.%4N")    
-        $cmd 2> return_value_buffer
+        $cmd -v 2> return_value_buffer
         time1=$(date "+%s.%4N")    
         return_value=$(cat return_value_buffer)
         rm return_value_buffer
@@ -39,8 +39,10 @@ execute(){
 	    echo -e "[ program : END ]       : $(date "+%H:%M:%S")"
             
 	    signal_handler_pid=$(ps ax | grep 'python3 signalhandler.py' | grep -v grep | awk '{print $1}')
-       	    kill -15 $signal_handler_pid
-
+       	    if [[ "" != $signal_handler_pid ]]
+	    then 
+	    	kill -15 $signal_handler_pid
+	    fi
             echo -e "\x1b[0m"
             exit 0
         fi
@@ -50,7 +52,11 @@ execute(){
 	echo -e "[ program : END ]       : $(date "+%H:%M:%S")"
 	
 	signal_handler_pid=$(ps ax | grep 'python3 signalhandler.py' | grep -v grep | awk '{print $1}')
-       	kill -15 $signal_handler_pid
+
+	if [[ "" != $signal_handler_pid ]]
+	then 
+	    kill -15 $signal_handler_pid
+	fi
         
 	echo -e "\x1b[0m"
         exit 1

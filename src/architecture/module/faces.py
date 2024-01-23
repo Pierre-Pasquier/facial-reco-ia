@@ -7,11 +7,12 @@ import dlib
 import cv2
 import time
 import datetime
+import click
 #import face_recognition
 
 # choose the numero of camera in argument if there are more than one, default 0 
-args = sys.argv[1:]
-num_cam = '0' if not args else args.pop(0)
+#args = sys.argv[2:]
+num_cam = '0' # if not args else args.pop(0)
 if num_cam not in set('0123'):
     print("Bad camera num, must be 0,1,2  or 3")
     exit()
