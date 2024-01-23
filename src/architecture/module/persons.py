@@ -9,11 +9,13 @@ import sys
 import dlib
 import cv2
 import time
+import click
+from ultralytics import YOLO
 
 
 # choose the numero of camera in argument if there are more than one, default 0 
-args = sys.argv[1:]
-num_cam = '0' if not args else args.pop(0)
+#args = sys.argv[1:]
+num_cam = '0' # if not args else args.pop(0)
 if num_cam not in set('0123'):
     print("Bad camera num, must be 0,1,2  or 3")
     exit()
@@ -37,13 +39,6 @@ def convert_sample_to_image(sample):
 
 
 
-def save_cropped_faces(x,y,w,h, image,i, compt):
-    cropped_face = image[y:y+h, x:x+w]
-    try:
-        cv2.imwrite(f"images/temp/person_{i}_{compt}.jpg", cropped_face)
-    except:
-        pass
-
 
 def exit_pipeline(pipeline, main_loop, main_loop_thread, Gst):
     # close the pipeline and finish the programm properly 
@@ -52,7 +47,14 @@ def exit_pipeline(pipeline, main_loop, main_loop_thread, Gst):
     main_loop_thread.join()
     exit()
 
-def main(num_cam=0, frame_without_detection=150, quality_factor=0.25):
+
+
+@click.command()
+@click.option('--num_cam', type=int, help='Choose the numero of the camera you want to use', required=False, default=0)
+@click.option('--verbose', '-v', is_flag=True, type=float, help='Activate the verbose', required=False)
+@click.option('--frame_without_detection', type=int, help='Number of frame without detection this script run before exiting', required=False, default=150)
+@click.option('--quality_factor', type=float, help='Multiply the image quality by this factor', required=False, default=0.25)
+def main(num_cam, verbose, frame_without_detection, quality_factor):
     ### GSTREAMER IMPORT ###
     gi.require_version('Gst','1.0')
     gi.require_version('GstApp','1.0')
@@ -79,11 +81,11 @@ def main(num_cam=0, frame_without_detection=150, quality_factor=0.25):
     ###
 
     ### LOAD MODEL
-    net = cv2.dnn.readNet('models/yolov3-spp.weights', 'models/yolov3-spp.cfg')
+    model = YOLO("yolov8n.pt")
     
 
     ### IMAGE PROCESSING LOOP ###
-    for i in range(frame_without_detection):
+    while True:
         start = time.time()
         #print(f"i : {i}")
         # get a sample from SYNC output
@@ -94,44 +96,20 @@ def main(num_cam=0, frame_without_detection=150, quality_factor=0.25):
             # get the image as a numpy array from the sample
             image = convert_sample_to_image(sample)
             small_image = cv2.resize(image, (0,0), fx=quality_factor, fy=quality_factor)
-            net.setInput(cv2.dnn.blobFromImage(small_image, 0.00392, (416,416), (0,0,0), True, crop=False))
+            persons_detected = model.predict(image, classes=0)
             # rgb_small_frame = image[:, :, ::-1]
 
-            ### FACE DETECTION
-            layer_names = net.getLayerNames()
-            output_layers = [layer_names[i-1] for i in net.getUnconnectedOutLayers()]
-            persons_detected = net.forward(output_layers)
-            ###
-            #print(persons_detected)
-            #Width = image.shape[1]
-            #Height = image.shape[0]
-            for person_detected in persons_detected :
-                #compt = 0
-                for detection in person_detected :
-                    #compt += 1
-                    scores = detection[5:]
-                    class_id = np.argmax(scores)
-                    confidence = scores[class_id]
-                    if confidence > 0.1 and class_id == 0 :
-                        #print("condidence " + str(confidence))
-                        #print("class_id : " + str(classes[class_id]), class_id)
-                        #c_x = int(detection[0] * Width)
-                        #c_y = int(detection[1] * Height)
-                        #w = int(detection[2] * Height)
-                        #h = int(detection[3] * Height)
-                        #x = int(c_x - w/2)
-                        #y = int(c_y - h/2)
-                        #save_cropped_faces(x,y,w,h,image,i, compt)
-                        print("1", file=sys.stderr)
-                        exit_pipeline(pipeline, main_loop, main_loop_thread, Gst)
+
+
+
+            if len(persons_detected[0].boxes) > 0 :
+                print("1", file=sys.stderr)
+                exit_pipeline(pipeline, main_loop, main_loop_thread, Gst)
                         
                 #print("FPS : " + str(1/(time.time() - start)))
             
 
         ###
-
-    print("0")
-    exit_pipeline(pipeline, main_loop, main_loop_thread, Gst)
 
 if __name__ == "__main__":
     main()

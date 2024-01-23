@@ -63,8 +63,11 @@ def main(verbose, threshold):
             new_directory = os.path.join(folder_path, 'persons', str(person_idx))
             os.makedirs(new_directory)
             person_idx += 1
-            # initialize representing vector, by launching a new process
-            os.system(f"echo \"{list(face_descriptor)}\" > {new_directory}/descriptor.txt")
+            # initialize representing vector, by launching a new processe
+            with open(os.path.join(new_directory, 'descriptor.txt'), 'w') as file:
+                file.write(str(list(face_descriptor)))
+                file.flush()
+                # os.system(f"echo \"{list(face_descriptor)}\" > {new_directory}/descriptor.txt ")
             os.rename(f, os.path.join(new_directory, os.path.basename(f)))
             # update known person dict
             person_vectors[new_directory] = np.array(face_descriptor)
@@ -81,7 +84,10 @@ def main(verbose, threshold):
                 old_vector = np.array(eval(file.readline()))
             new_vector = (old_vector * nb_img + np.array(face_descriptor)) / (nb_img + 1)
             # update the descriptor file
-            os.system(f"echo \"{list(new_vector)}\" > {min_key}/descriptor.txt")
+            with open(os.path.join(min_key, 'descriptor.txt'), 'w') as file:
+                file.write(str(list(new_vector)))
+                file.flush()
+                # os.system(f"echo \"{list(new_vector)}\" > {min_key}/descriptor.txt ")
             # update known person dict
             person_vectors[min_key] = new_vector
 

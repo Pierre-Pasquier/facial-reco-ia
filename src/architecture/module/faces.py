@@ -45,7 +45,7 @@ def convert_sample_to_image(sample):
 
 @click.command()
 @click.option('--quality_factor', type=float, help='Multiply the image quality by this factor', required=False, default=0.3)
-@click.option('--verbose','-v', is_flag=True, type=bool, help='Activate the verbose', required=False)
+@click.option('--verbose', '-v', is_flag=True, type=float, help='Activate the verbose', required=False)
 def main(quality_factor, verbose):
     ### GSTREAMER IMPORT ###
     gi.require_version('Gst','1.0')
@@ -56,11 +56,13 @@ def main(quality_factor, verbose):
     
     
     ### INIT GSTREAMER DEAMON ###
+    start_gstreamer = time.time()
     Gst.init()
     
     main_loop = GLib.MainLoop()
     main_loop_thread = Thread(target=main_loop.run)
     main_loop_thread.start()
+    
     ###
     
     
@@ -72,11 +74,21 @@ def main(quality_factor, verbose):
     pipeline.set_state(Gst.State.PLAYING)
     ###
 
+    if verbose :
+        print(f"Time to init gstreamer : {time.time() - start_gstreamer}")
+
+    start_model = time.time()
     detector = dlib.cnn_face_detection_model_v1(face_detector)
+    if verbose :
+        print(f"Time to init model : {time.time() - start_model}")
 
     ### IMAGE PROCESSING LOOP ###
     flag = 0
-    for i in range(1000):
+    persons_detected_count = 0
+    number_of_frame = 100
+    if verbose:
+        print(f"Number of frame : {number_of_frame}\n")
+    for i in range(number_of_frame):
         start = time.time()
         # get a sample from SYNC output
         sample = SYNC.try_pull_sample(Gst.SECOND)
@@ -88,11 +100,11 @@ def main(quality_factor, verbose):
             faces_detected = detector(small_image, 1)
             #print(len(faces_detected))
             if len(faces_detected) != 0:
+                if verbose : 
+                    print(f"\33[2A Number of faces detected on this frame : {len(faces_detected)}")
                 save_cropped_faces(faces_detected, image, i, quality_factor)
-                #print("image saved")
+                persons_detected_count += len(faces_detected)
                 flag = 1
-                #exit(1)
-            #print(faces_detected)
         if verbose:
             print(f"FPS: {1/(time.time() - start)}")
     ###
