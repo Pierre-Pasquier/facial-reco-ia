@@ -1,5 +1,10 @@
 declare -A process_list
 
+onINT() {
+        kill -15 $current_block_pid
+}
+
+
 execute(){
     if [[ -v process_list[$1] ]] 
     then
@@ -18,7 +23,11 @@ execute(){
         echo -e "\x1b[0m"
        
         time0=$(date "+%s.%4N")    
-        $cmd -v 2> return_value_buffer
+        
+	$cmd -v 2> return_value_buffer &
+	current_block_pid="$!"
+        wait
+
         time1=$(date "+%s.%4N")    
         return_value=$(cat return_value_buffer)
         rm return_value_buffer
@@ -64,6 +73,8 @@ execute(){
     fi
 }
 
+trap onINT SIGINT
+
 separator=';'
 nb_process=$(cat transition.csv | wc -l) 
 
@@ -94,7 +105,7 @@ do
     fi
 done
 
+
 python3 aff_process.py ${!process_list[@]}
 
-execute $process_0 & python3 signalhandler.py $separator
-
+execute $process_0 
