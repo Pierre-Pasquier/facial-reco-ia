@@ -34,6 +34,28 @@ def save_cropped_faces(faces, image, frame, qf):
         except:
             pass
 
+def detection(number_of_frame, Gst, SYNC, quality_factor, verbose, detector, flag) :
+    faces_detected_count = 0
+    faces_detected = []
+    for i in range(number_of_frame):
+        start = time.time()
+        # get a sample from SYNC output
+        sample = SYNC.try_pull_sample(Gst.SECOND)
+        if sample is not None : 
+            # get the image as a numpy array from the sample
+            image = convert_sample_to_image(sample)
+            image = image[:, :, ::-1]
+            small_image = cv2.resize(image, (0,0), fx=quality_factor, fy=quality_factor)
+            faces_detected = detector(small_image, 1)
+            #print(len(faces_detected))
+            if len(faces_detected) != 0:
+                save_cropped_faces(faces_detected, image, i, quality_factor)
+                faces_detected_count += len(faces_detected)
+                flag = 1
+        if verbose and number_of_frame != 1:
+            print(f"\33[2AFPS: {1/(time.time() - start)}\nNumber of faces detected on this frame : {len(faces_detected)}")
+
+    return flag, faces_detected_count
 
 def convert_sample_to_image(sample):
     # get the image data from a sample and return it as a numpy array
@@ -79,34 +101,22 @@ def main(quality_factor, verbose):
 
     start_model = time.time()
     detector = dlib.cnn_face_detection_model_v1(face_detector)
+    flag, faces_detected_count = detection(1, Gst, SYNC, quality_factor, verbose, detector, 0)
     if verbose :
         print(f"Time to init model : {time.time() - start_model}")
 
     ### IMAGE PROCESSING LOOP ###
-    flag = 0
-    persons_detected_count = 0
     number_of_frame = 100
-    faces_detected = []
     if verbose:
         print(f"Number of frame : {number_of_frame}\n")
-    for i in range(number_of_frame):
-        start = time.time()
-        # get a sample from SYNC output
-        sample = SYNC.try_pull_sample(Gst.SECOND)
-        if sample is not None : 
-            # get the image as a numpy array from the sample
-            image = convert_sample_to_image(sample)
-            image = image[:, :, ::-1]
-            small_image = cv2.resize(image, (0,0), fx=quality_factor, fy=quality_factor)
-            faces_detected = detector(small_image, 1)
-            #print(len(faces_detected))
-            if len(faces_detected) != 0:
-                save_cropped_faces(faces_detected, image, i, quality_factor)
-                persons_detected_count += len(faces_detected)
-                flag = 1
-        if verbose:
-            print(f"\33[2AFPS: {1/(time.time() - start)}\nNumber of faces detected on this frame : {len(faces_detected)}")
+        
+        
+    flag, faces_detected_count = detection(number_of_frame, Gst, SYNC, quality_factor, verbose, detector, 0)
+    
+    
     ###
+    if verbose:
+        print(f"Nombre de visages detectées : {faces_detected_count}")
     print(flag, file=sys.stderr)
 
 
