@@ -86,6 +86,7 @@ def main(quality_factor, verbose):
     flag = 0
     persons_detected_count = 0
     number_of_frame = 100
+    faces_detected = []
     if verbose:
         print(f"Number of frame : {number_of_frame}\n")
     for i in range(number_of_frame):
@@ -100,13 +101,11 @@ def main(quality_factor, verbose):
             faces_detected = detector(small_image, 1)
             #print(len(faces_detected))
             if len(faces_detected) != 0:
-                if verbose : 
-                    print(f"\33[2A Number of faces detected on this frame : {len(faces_detected)}")
                 save_cropped_faces(faces_detected, image, i, quality_factor)
                 persons_detected_count += len(faces_detected)
                 flag = 1
         if verbose:
-            print(f"FPS: {1/(time.time() - start)}")
+            print(f"\33[2AFPS: {1/(time.time() - start)}\nNumber of faces detected on this frame : {len(faces_detected)}")
     ###
     print(flag, file=sys.stderr)
 
