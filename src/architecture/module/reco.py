@@ -3,6 +3,7 @@ import sys
 import dlib
 import glob
 import click
+import time
 import numpy as np
 
 
@@ -14,8 +15,13 @@ def main(verbose, threshold):
     face_reco = 'models/dlib_face_recognition_resnet_model_v1.dat'
     folder_path = 'images'
 
+    start_load_model = time.time()
+
     sp = dlib.shape_predictor(shape_predictor)
     facerec = dlib.face_recognition_model_v1(face_reco)
+
+    if verbose:
+        print(f"TIME TO LOAD MODELS: {time.time() - start_load_model}")
 
     person_vectors = {}
     new_persons_detected = 0
