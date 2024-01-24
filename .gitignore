@@ -10,6 +10,9 @@ models
 ./data/lwf
 lfw
 
+./data/lfw_cropped
+lfw_cropped
+
 ./src/architecture/images
 images
 
