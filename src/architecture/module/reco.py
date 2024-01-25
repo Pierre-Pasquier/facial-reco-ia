@@ -4,18 +4,23 @@ import dlib
 import glob
 import click
 import time
+import random as rd
 import numpy as np
 
 
 @click.command()
 @click.option('--verbose', '-v', is_flag=True, help='Activate the verbose', required=False)
+@click.option('--random', '-r', is_flag=True, help='Activate random image selection', required=False)
 @click.option('--threshold', '-t', type=float, help='Recognition threshold', required=False, default=0.43)
-def main(verbose, threshold):
+def main(verbose, random, threshold):
     shape_predictor = 'models/shape_predictor_5_face_landmarks.dat'
     face_reco = 'models/dlib_face_recognition_resnet_model_v1.dat'
     folder_path = 'images'
 
     new_faces_list = [f for f in glob.glob(os.path.join(folder_path, 'temp', "*.jpg"))]
+
+    if random:
+        rd.shuffle(new_faces_list)
     
     start_load_model = time.time()
 
