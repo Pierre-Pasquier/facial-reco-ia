@@ -15,10 +15,15 @@ def main(verbose, threshold):
     face_reco = 'models/dlib_face_recognition_resnet_model_v1.dat'
     folder_path = 'images'
 
+    new_faces_list = [f for f in glob.glob(os.path.join(folder_path, 'temp', "*.jpg"))]
+    
     start_load_model = time.time()
 
     sp = dlib.shape_predictor(shape_predictor)
     facerec = dlib.face_recognition_model_v1(face_reco)
+    # inference test
+    if new_faces_list != []:
+        calculate_face_descriptor(sp, facerec, new_faces_list[0])
 
     if verbose:
         print(f"TIME TO LOAD MODELS: {time.time() - start_load_model}")
@@ -33,18 +38,9 @@ def main(verbose, threshold):
             directory = os.path.dirname(f)
             person_vectors[directory] = np.array(eval(file.readline()))
 
-    # iterate on new faces
-    for f in glob.glob(os.path.join(folder_path, 'temp', "*.jpg")):
-        img = dlib.load_rgb_image(f)
-
-        height, width = img.shape[0], img.shape[1]
-
-        rect = dlib.rectangle(left=0, top=0, right=width, bottom=height)
-
-        shape = sp(img, rect)
-
-        face_chip = dlib.get_face_chip(img, shape)
-        face_descriptor = facerec.compute_face_descriptor(face_chip)
+    # iterate on new faces in temp file
+    for f in new_faces_list:
+        face_descriptor = calculate_face_descriptor(sp, facerec, f)
 
         distance_summary = {}
         
@@ -101,6 +97,22 @@ def main(verbose, threshold):
         print(f"NEW PERSONS DETECTED: {new_persons_detected}")
     
     print("1", file=sys.stderr)
+
+
+def calculate_face_descriptor(shape_predictor, face_recognition, image_file):
+    img = dlib.load_rgb_image(image_file)
+
+    height, width = img.shape[0], img.shape[1]
+
+    rect = dlib.rectangle(left=0, top=0, right=width, bottom=height)
+
+    shape = shape_predictor(img, rect)
+
+    face_chip = dlib.get_face_chip(img, shape)
+    face_descriptor = face_recognition.compute_face_descriptor(face_chip)
+
+    return face_descriptor
+
 
 if __name__ == "__main__":    
     main()
