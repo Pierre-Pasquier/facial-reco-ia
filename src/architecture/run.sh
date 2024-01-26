@@ -38,11 +38,9 @@ execute(){
 
         time0=$(date "+%s.%4N")    			# Get time before the block execution
         
-	$cmd -v 2> return_value_buffer &		# Execute the block in background and redirect the stderr output into a buffer file
+	$cmd 2> return_value_buffer &			# Execute the block in background and redirect the stderr output into a buffer file
 	current_block_pid="$!"				# Store the PID of the block execution in case of sigINT
 	wait $current_block_pid 			# Wait the end of the block execution
-
-	
        
 	time1=$(date "+%s.%4N")    			# Get time after the block execution
         
