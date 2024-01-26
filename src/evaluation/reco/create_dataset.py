@@ -4,12 +4,12 @@ import glob
 import os
 import shutil
 import random
+from tqdm import tqdm
 
 
 def save_cropped_faces(faces, image, file, exit_folder):
     # save cropped faces as separate images in a directory
     for i, face in enumerate(faces):
-        print(face)
         (x, y, w, h) = (face.left(), face.top(), face.width(), face.height())
         cropped_face = image[y:y+h, x:x+w]
         if x >= 0 and y >= 0 and w >= 0 and h >= 0:
@@ -25,15 +25,13 @@ def crop_directory(entry_folder, exit_folder):
 
         dets = detector(img, 1)
 
-        print(dets)
-
         if dets != []:
             save_cropped_faces(dets, img, f, exit_folder)
 
 def crop_dataset(dataset_folder, new_dataset_path, nb_folder):
     all_directories = [d for d in os.listdir(dataset_folder) if os.path.isdir(os.path.join(dataset_folder, d))]
 
-    for _ in range(nb_folder):
+    for _ in tqdm(range(nb_folder), desc="Processing cropping"):
         random_directory = random.choice(all_directories)
 
         crop_directory(os.path.join(dataset_folder, random_directory), os.path.join(new_dataset_path, random_directory + "_cropped"))
@@ -45,7 +43,7 @@ def copy_all_images(dataset_path):
 
     all_directories = [d for d in os.listdir(dataset_path) if os.path.isdir(os.path.join(dataset_path, d))]
 
-    for dir in all_directories:
+    for dir in tqdm(all_directories, desc="Proccessing copy of all images"):
         if dir != "_all":
             for f in os.listdir(os.path.join(dataset_path, dir)):
                 shutil.copy(os.path.join(dataset_path, dir, f), os.path.join(dataset_path, "_all", f))
@@ -59,6 +57,7 @@ def main(dataset_folder, new_dataset_path, nb_folder):
 if __name__ == "__main__":
     dataset_folder = "data/lfw"
     new_dataset_path = "data/lfw_cropped"
-    nb_folder = 10
+    subdirectories = [d for d in os.listdir(dataset_folder) if os.path.isdir(os.path.join(dataset_folder, d))]
+    nb_folder = len(subdirectories)
 
     main(dataset_folder, new_dataset_path, nb_folder)
