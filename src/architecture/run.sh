@@ -1,3 +1,5 @@
+### This script run the automaton described in the transition.csv file by executing one after the other the different blocks according to there transition table
+
 execute(){	
 
     ### Recursive function that execute a block and call itself recursivly on the next block according to the transition table 
@@ -5,7 +7,7 @@ execute(){
 
     block_name=$1
 
-    ### Check if the process appears in the transition table
+    ### Check if the block appears in the transition table
     if [[ -v process_list[$block_name] ]] 	
     then
 	line=${process_list[$block_name]}		# Get the line in the transition table corresponding to the current block
@@ -19,6 +21,11 @@ execute(){
         
 	table=($t0 $t1) 				# Transition table for the current block
 	
+	if [ "$verbose" = true ];
+	then 
+		cmd="$cmd -v"
+	fi
+
 	### Print starting block informations			
 
         echo -e "\n\x1b[1;32m////////////[ $1 ]///////////////\x1b[0m"
@@ -26,16 +33,18 @@ execute(){
         echo -e "\x1b[1;35m"
         echo -e "[ $1 : START ]          : $(date "+%H:%M:%S") "
         echo -e "\x1b[0m"
-      
+     
 				### BLOCK EXECUTION ###
 
         time0=$(date "+%s.%4N")    			# Get time before the block execution
         
 	$cmd -v 2> return_value_buffer &		# Execute the block in background and redirect the stderr output into a buffer file
 	current_block_pid="$!"				# Store the PID of the block execution in case of sigINT
-	wait 						# Wait the end of the block execution
+	wait $current_block_pid 			# Wait the end of the block execution
 
-        time1=$(date "+%s.%4N")    			# Get time after the block execution
+	
+       
+	time1=$(date "+%s.%4N")    			# Get time after the block execution
         
 	return_value=$(cat return_value_buffer) 	# Get from the buffer file the return value of the block execution
         rm return_value_buffer				# Delete the buffer file
@@ -47,8 +56,7 @@ execute(){
         echo -e "[ $1 : RETURN VALUE ]   : $return_value "
         echo -e "[ $1 : TIME ]           : $(echo $time1 - $time0 | bc) s"
         
-
-				### TRANSITION ###  
+					### TRANSITION ###  
 
 	### Check in the table if there is a transition corresponding to this return value for the current block
         
@@ -67,6 +75,12 @@ execute(){
             echo -e "\x1b[1;33m"
 	    echo -e "[ program : END ]       : $(date "+%H:%M:%S")"
             echo -e "\x1b[0m"
+
+#	    ### Killing the timeout deamon    
+#	    if [ "$timeout_deamon_pid" != "" ];
+#	    then
+#		    kill -INT $timeout_deamon_pid
+#	    fi
             exit 0
         fi
 
@@ -75,30 +89,169 @@ execute(){
 	    # End of the programm
         
 	echo -e "\x1b[1;33m"
-        echo -e "[ program : INFO ]      : process $1 not found in the transition table"
+        echo -e "[ program : INFO ]      : block $1 not found in the transition table"
 	echo -e "[ program : END ]       : $(date "+%H:%M:%S")"
-	
 	echo -e "\x1b[0m"
+	
+#	### Killing the timeout deamon    
+#	if [ "$timeout_deamon_pid" != "" ];
+#	then
+#		kill -INT $timeout_deamon_pid
+#	fi
         exit 1
 
     fi
 }
 
+# Function that stop the current block properly
 onINT() { 
-
-	### Function to call when the shell get an INT signal 
-	### Stop the current block properly
-
-	kill -15 $current_block_pid 
+	
+	if ps -p $current_block_pid > /dev/null
+	then
+		echo -e "\x1b[1;33m[ program : INFO ]       : killing block $block_name"
+		kill -15 $current_block_pid 
+	else
+		# End of the programm
+	
+	        echo -e "\x1b[1;33m"
+	        echo -e "[ program : INFO ]      : programm get kill"
+	        echo -e "[ program : END ]       : $(date "+%H:%M:%S")"
+	        echo -e "\x1b[0m"
+	
+		### Killing the timeout deamon    
+#		if [ "$timeout_deamon_pid" != "" ];
+#		then
+#			kill -INT $timeout_deamon_pid
+#		fi
+	        exit 0
+	fi
 }
 
-trap onINT SIGINT				# Link onINT function to SIGINT trap
+trap onINT SIGINT			      	# Link onINT function to SIGINT trap
 
+verbose=false					# verbose booleen for block
+logfile_name=					# log file
+duration=					# programm duration in s
 separator=';'					# Separator symbol for the csv file
+
+usage() {
+	echo "Usage: $0 [OPTIONS]"
+	echo "Options:"
+	echo " -h, --help      Display this help message"
+	echo " -v, --verbose   Enable verbose mode"
+	echo " -f, --file      FILE Specify an output log file"
+	echo " -s, --sep       SEPARATOR Specify the separator of the transition.csv file, default ';'"
+	echo " -d, --duration  hh:mm:ss Set a timesout"
+}
+
+has_argument() {
+	[[ ("$1" == *=* && -n ${1#*=}) || ( ! -z "$2" && "$2" != -*)  ]];
+}
+
+extract_argument() {
+	echo "${2:-${1#*=}}"
+}
+
+is_correct_duration_format() {
+	[[ "$1" =~ [0-9]+:[0-9]+:[0-9]+ ]];		
+}	
+
+### Function to handle options and arguments
+handle_options() {
+	while [ $# -gt 0 ]; do
+		case $1 in
+			-h | --help)
+        			usage
+        			exit 0
+        			;;
+
+      			-v | --verbose)
+        			verbose=true
+        			;;
+
+      			-f | --file*)
+        			if ! has_argument $@; 
+				then
+          				echo "File not specified." >&2
+          				usage
+          				exit 1
+        			fi
+        			logfile_name=$(extract_argument $@)
+        			shift
+        			;;
+
+      			-s | --sep*)
+        			if ! has_argument $@; 
+				then
+          				echo "Separator not specified." >&2
+          				usage
+          				exit 1
+        			fi
+        			separator=$(extract_argument $@)
+        			shift
+        			;;
+
+			-d | --duration*)
+        			if ! has_argument $@; 
+				then
+          				echo "Duration not specified." >&2
+          				usage
+          				exit 1
+        			fi
+        			
+				duration=$(extract_argument $@)
+        			
+				if ! is_correct_duration_format $duration;
+				then
+          				echo "Bad duration format." >&2
+          				usage
+          				exit 1
+				fi
+				shift
+        			;;
+
+
+      			*)
+        			echo "Invalid option: $1" >&2
+        			usage
+        			exit 1
+        			;;
+    		esac
+    		shift
+  	done
+}
+
+			### MAIN ###
+
+handle_options "$@"
+
 nb_process=$(cat transition.csv | wc -l) 	# number of line in the transition.csv file
 
 ### Associativ array that store the csv lines in association with there block's name
 declare -A process_list
+
+
+### LOGFILE REDIRECTION
+if [ "$logfile_name" != "" ];
+then
+	exec &>> $logfile_name
+fi
+
+
+### TIMEOUT DEAMON
+if [ "$duration" != "" ];
+then
+	PID=$$
+	
+	h=$(echo $duration | awk -F ':' '{print $1}')
+	m=$(echo $duration | awk -F ':' '{print $2}')
+	s=$(echo $duration | awk -F ':' '{print $3}')
+
+	# (sleep $h\h $m\m $s\s && echo -e "\x1b[1;33m[ program : INFO ]	: timeout\x1b[0m" && kill -INT "$PID") &
+	(sleep $h\h $m\m $s\s && kill -INT "$PID") &
+	timeout_deamon_pid="$!"
+fi
+
 
 
 echo "╭─╴ ╭─╮ ╭─╮ ╵ ╭─╮ ╷      ┌─╮ ╭─╴ ╭─╮ ╭─╮"
