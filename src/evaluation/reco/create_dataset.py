@@ -47,6 +47,7 @@ def copy_all_images(dataset_path):
         if dir != "_all":
             for f in os.listdir(os.path.join(dataset_path, dir)):
                 shutil.copy(os.path.join(dataset_path, dir, f), os.path.join(dataset_path, "_all", f))
+                shutil.copy(os.path.join(dataset_path, dir, f), os.path.join('src/architecture/images/temp', f))
 
 
 def main(dataset_folder, new_dataset_path, nb_folder):
@@ -58,6 +59,7 @@ if __name__ == "__main__":
     dataset_folder = "data/lfw"
     new_dataset_path = "data/lfw_cropped"
     subdirectories = [d for d in os.listdir(dataset_folder) if os.path.isdir(os.path.join(dataset_folder, d))]
-    nb_folder = len(subdirectories)
+    # nb_folder = len(subdirectories)
+    nb_folder = 1500
 
     main(dataset_folder, new_dataset_path, nb_folder)

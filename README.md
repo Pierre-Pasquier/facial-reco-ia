@@ -83,3 +83,6 @@ Running the script `src/library_test/dlib/face_detector_test.py`, the Jetson Nan
 
 **Solution**: 
 Use images with smaller resolution prevent the crash of the devkit.
+
+**Trouble**:
+Stopping the run.sh script durng the reco block can be harmful for the next run, because it seems stopping during the writting of the descriptor.txt file. Then during the next run, the file is empty. The goal is to set a backup file to prevent this from happening.
