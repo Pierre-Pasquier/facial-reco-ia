@@ -123,7 +123,7 @@ usage() {
 	echo " -h, --help			Display this help message"
 	echo " -v, --verbose			Enable verbose mode"
 	echo " -f, --file <FILE> 		Specify an output log file"
-	echo " -t, --transitionfile <FILE> 	Specify an input csv transition file, default 'transition.csv'"
+	echo " -t, --transition <FILE>		Specify an input csv transition file, default 'transition.csv'"
 	echo " -s, --sep <SEPARATOR>		Specify the separator of the csv transition file, default ';'"
 	echo " -d, --duration  hh:mm:ss 	Set a timesout"
 }
