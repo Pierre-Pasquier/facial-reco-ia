@@ -1,4 +1,4 @@
-### This script run the automaton described in the transition.csv file by executing one after the other the different blocks according to there transition table
+### This script run the automaton described in the CSV transition file by executing one after the other the different blocks according to there transition table
 
 execute(){	
 
@@ -8,16 +8,14 @@ execute(){
     block_name=$1
 
     ### Check if the block appears in the transition table
-    if [[ -v process_list[$block_name] ]] 	
+    if [[ -v Blocks_data[$block_name-name] ]] 	
     then
-	line=${process_list[$block_name]}		# Get the line in the transition table corresponding to the current block
-        
-	### Parse the line in csv format : 
-	### <block_name>,<command>,<transition_0>,<transition_1> 
-	
-	cmd=$(echo $line | awk -F $separator '{print $2}') 
-        t0=$(echo $line | awk -F $separator '{print $3}') 
-        t1=$(echo $line | awk -F $separator '{print $4}') 
+      	
+	### Get data of the current block
+	 
+	cmd=${Blocks_data[$block_name-cmd]}
+	t0=${Blocks_data[$block_name-0]}
+	t1=${Blocks_data[$block_name-1]}
         
 	table=($t0 $t1) 				# Transition table for the current block
 	
@@ -73,12 +71,6 @@ execute(){
             echo -e "\x1b[1;33m"
 	    echo -e "[ program : END ]       : $(date "+%H:%M:%S")"
             echo -e "\x1b[0m"
-
-#	    ### Killing the timeout deamon    
-#	    if [ "$timeout_deamon_pid" != "" ];
-#	    then
-#		    kill -INT $timeout_deamon_pid
-#	    fi
             exit 0
         fi
 
@@ -90,16 +82,12 @@ execute(){
         echo -e "[ program : INFO ]      : block $1 not found in the transition table"
 	echo -e "[ program : END ]       : $(date "+%H:%M:%S")"
 	echo -e "\x1b[0m"
-	
-#	### Killing the timeout deamon    
-#	if [ "$timeout_deamon_pid" != "" ];
-#	then
-#		kill -INT $timeout_deamon_pid
-#	fi
         exit 1
 
     fi
 }
+
+
 
 # Function that stop the current block properly
 onINT() { 
@@ -115,31 +103,29 @@ onINT() {
 	        echo -e "[ program : INFO ]      : programm get kill"
 	        echo -e "[ program : END ]       : $(date "+%H:%M:%S")"
 	        echo -e "\x1b[0m"
-	
-		### Killing the timeout deamon    
-#		if [ "$timeout_deamon_pid" != "" ];
-#		then
-#			kill -INT $timeout_deamon_pid
-#		fi
 	        exit 0
 	fi
 }
 
 trap onINT SIGINT			      	# Link onINT function to SIGINT trap
 
+
+
 verbose=false					# verbose booleen for block
 logfile_name=					# log file
 duration=					# programm duration in s
 separator=';'					# Separator symbol for the csv file
+transitionfile_name=transition.csv		# CSV transition file
 
 usage() {
 	echo "Usage: $0 [OPTIONS]"
 	echo "Options:"
-	echo " -h, --help      Display this help message"
-	echo " -v, --verbose   Enable verbose mode"
-	echo " -f, --file      FILE Specify an output log file"
-	echo " -s, --sep       SEPARATOR Specify the separator of the transition.csv file, default ';'"
-	echo " -d, --duration  hh:mm:ss Set a timesout"
+	echo " -h, --help			Display this help message"
+	echo " -v, --verbose			Enable verbose mode"
+	echo " -f, --file <FILE> 		Specify an output log file"
+	echo " -t, --transitionfile <FILE> 	Specify an input csv transition file, default 'transition.csv'"
+	echo " -s, --sep <SEPARATOR>		Specify the separator of the csv transition file, default ';'"
+	echo " -d, --duration  hh:mm:ss 	Set a timesout"
 }
 
 has_argument() {
@@ -177,6 +163,18 @@ handle_options() {
         			logfile_name=$(extract_argument $@)
         			shift
         			;;
+
+			-t | --transition*)
+        			if ! has_argument $@; 
+				then
+          				echo "Transition file not specified." >&2
+          				usage
+          				exit 1
+        			fi
+        			transitionfile_name=$(extract_argument $@)
+        			shift
+        			;;
+
 
       			-s | --sep*)
         			if ! has_argument $@; 
@@ -223,16 +221,17 @@ handle_options() {
 
 handle_options "$@"
 
-nb_process=$(cat transition.csv | wc -l) 	# number of line in the transition.csv file
+nb_process=$(cat $transitionfile_name | wc -l) 	# number of line in the CSV transition file
 
-### Associativ array that store the csv lines in association with there block's name
-declare -A process_list
+### Associativ array that store the data of blocks contained in the csv transition file 
+declare -A Blocks_data
+declare -a Block_list
 
 
 ### LOGFILE REDIRECTION
 if [ "$logfile_name" != "" ];
 then
-	exec &>> $logfile_name
+	exec &> $logfile_name
 fi
 
 
@@ -261,17 +260,29 @@ echo -e "[ program : START ]     : $(date "+%H:%M:%S")"
 echo -e "\x1b[0m"
 	
 
-echo "Reading transition.csv file"
+echo "Reading $transitionfile_name file"
 for ((i=2; i <= $nb_process; i++))
 do  
-    line=$(sed -n $i\p transition.csv)
+    line=$(sed -n $i\p $transitionfile_name)
 
     if [ "$line" != "" ];
     then
         echo "ligne $i : $line"
 
+	### Parse the line in csv format : 
+	### <block_name>,<command>,<transition_0>,<transition_1> 
+	
         name=$(echo $line | awk -F $separator '{print $1}') 
-	process_list[$name]=$line
+        cmd=$(echo $line | awk -F $separator '{print $2}') 
+        t0=$(echo $line | awk -F $separator '{print $3}') 
+        t1=$(echo $line | awk -F $separator '{print $4}') 
+
+	Block_list[$(( $i -1 ))]=$name
+	
+	Blocks_data["$name-name"]=$name
+	Blocks_data["$name-cmd"]=$cmd
+	Blocks_data["$name-0"]=$t0
+	Blocks_data["$name-1"]=$t1
 
         if [ $i -eq 2 ];then
             process_0=$name 	    
@@ -281,6 +292,6 @@ done
 
 echo -e "\n$(($nb_process - 1)) blocks fund in the transition table : "
 
-python3 aff_process.py ${!process_list[@]}
+python3 aff_process.py ${Block_list[@]}
 
 execute $process_0 
