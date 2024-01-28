@@ -4,6 +4,7 @@ import dlib
 import glob
 import click
 import time
+import shutil
 import random as rd
 import numpy as np
 
@@ -46,10 +47,27 @@ def main(verbose, random, threshold):
     person_idx = len(os.listdir(os.path.join(folder_path, 'persons')))
 
     # get the descriptor of all persons in persons directory
-    for f in glob.glob(os.path.join(folder_path, 'persons', "*", "*.txt")):
+    for f in glob.glob(os.path.join(folder_path, 'persons', "*", "descriptor.txt")):
+        # if the descriptor is empty, open the backup file
         with open(f, 'r') as file:
-            directory = os.path.dirname(f)
-            person_vectors[directory] = np.array(eval(file.readline()))
+            descriptor_content = file.readline().strip()
+
+            # if descriptor empty
+            if not descriptor_content:
+                if verbose:
+                    print(f"DESCRIPTOR EMPTY, BACKUP FILE USED FOR FILE: {f}")
+                backup_file_path = os.path.join(os.path.dirname(f), "backup_descriptor.txt")
+                with open(backup_file_path, 'r') as file:
+                    directory = os.path.dirname(f)
+                    person_vectors[directory] = np.array(eval(file.readline()))
+                # replace descriptor by backup file
+                shutil.copy(os.path.join(os.path.dirname(f), "backup_descriptor.txt"), os.path.join(os.path.dirname(f), "descriptor.txt"))
+
+            # if descriptor file not empty
+            else:
+                with open(f, 'r') as file:
+                    directory = os.path.dirname(f)
+                    person_vectors[directory] = np.array(eval(descriptor_content))
 
     # iterate on new faces in temp file
     for f in new_faces_list:
@@ -127,29 +145,39 @@ def register_new_person(folder_path, person_idx, face_descriptor, person_vectors
     new_directory = os.path.join(folder_path, 'persons', str(person_idx))
     os.makedirs(new_directory)
     
-    # initialize representing vector, by launching a new processe
+    # initialize representing vector
     with open(os.path.join(new_directory, 'descriptor.txt'), 'w') as file:
         file.write(str(list(face_descriptor)))
         file.flush()
-        # os.system(f"echo \"{list(face_descriptor)}\" > {new_directory}/descriptor.txt ")
+
+    # make a backup
+    shutil.copy(os.path.join(new_directory, 'descriptor.txt'), os.path.join(new_directory, 'backup_descriptor.txt'))
+    
+    # move file
     os.rename(f, os.path.join(new_directory, os.path.basename(f)))
+
     # update known person dict
     person_vectors[new_directory] = np.array(face_descriptor)
 
 def register_known_person(min_key, face_descriptor, person_vectors, f):
     # register in existing directory
     os.rename(f, os.path.join(min_key, os.path.basename(f)))
+
     # update representing vector
     old_vector = None
     nb_img = len(os.listdir(min_key)) - 1
     with open(os.path.join(min_key, 'descriptor.txt'), 'r') as file:
         old_vector = np.array(eval(file.readline()))
     new_vector = (old_vector * nb_img + np.array(face_descriptor)) / (nb_img + 1)
+
     # update the descriptor file
     with open(os.path.join(min_key, 'descriptor.txt'), 'w') as file:
         file.write(str(list(new_vector)))
         file.flush()
-        # os.system(f"echo \"{list(new_vector)}\" > {min_key}/descriptor.txt ")
+
+    # update backup file by overwriting it with descriptor copy
+    shutil.copy(os.path.join(min_key, 'descriptor.txt'), os.path.join(min_key, 'backup_descriptor.txt'))
+
     # update known person dict
     person_vectors[min_key] = new_vector
 
