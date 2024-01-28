@@ -4,7 +4,6 @@ import dlib
 import glob
 import click
 import time
-import shutil
 import random as rd
 import numpy as np
 
@@ -61,7 +60,9 @@ def main(verbose, random, threshold):
                     directory = os.path.dirname(f)
                     person_vectors[directory] = np.array(eval(file.readline()))
                 # replace descriptor by backup file
-                shutil.copy(os.path.join(os.path.dirname(f), "backup_descriptor.txt"), os.path.join(os.path.dirname(f), "descriptor.txt"))
+                source = os.path.join(os.path.dirname(f), "backup_descriptor.txt")
+                destination = os.path.join(os.path.dirname(f), "descriptor.txt")
+                os.system(f"cp {source} {destination}")
 
             # if descriptor file not empty
             else:
@@ -151,7 +152,7 @@ def register_new_person(folder_path, person_idx, face_descriptor, person_vectors
         file.flush()
 
     # make a backup
-    shutil.copy(os.path.join(new_directory, 'descriptor.txt'), os.path.join(new_directory, 'backup_descriptor.txt'))
+    os.system(f"cp {os.path.join(new_directory, 'descriptor.txt')} {os.path.join(new_directory, 'backup_descriptor.txt')}")
     
     # move file
     os.rename(f, os.path.join(new_directory, os.path.basename(f)))
@@ -176,7 +177,7 @@ def register_known_person(min_key, face_descriptor, person_vectors, f):
         file.flush()
 
     # update backup file by overwriting it with descriptor copy
-    shutil.copy(os.path.join(min_key, 'descriptor.txt'), os.path.join(min_key, 'backup_descriptor.txt'))
+    os.system(f"cp {os.path.join(min_key, 'descriptor.txt')} {os.path.join(min_key, 'backup_descriptor.txt')}")
 
     # update known person dict
     person_vectors[min_key] = new_vector
